@@ -195,7 +195,25 @@ MonoBehaviour:
   zapKey: 32
   slowMovementFactor: 0.5
   slowMoRange: 4.5
+  maxHealth: 3
   rb: {fileID: 32041331}
+  spriteRenderer: {fileID: 32041332}
+  runSprites:
+  - {fileID: 4380269656606350858, guid: 1dd43527e2665ac4ba2f8c723a14dcca, type: 3}
+  - {fileID: 5539486724915195148, guid: aa9d57c3098ac754e9aff92392d9161e, type: 3}
+  - {fileID: 6651214095562990482, guid: 308b7db72c4809d4691a28b409839a0e, type: 3}
+  runFrameRate: 12
+  hurtSprite: {fileID: 2090410103895991759, guid: 32d8ce7e23806584482a730780d9183d, type: 3}
+  hurtTime: 0.2
+  deathSprites:
+  - {fileID: 2090410103895991759, guid: 32d8ce7e23806584482a730780d9183d, type: 3}
+  - {fileID: 3429166770521703450, guid: d0fe7d0758ffa774ba29e6926669ecdf, type: 3}
+  - {fileID: -8160529703424738112, guid: 1ad35c0d1e9bfec4b987d8db3c60b477, type: 3}
+  - {fileID: 7107845343605305739, guid: c0be00c1073488f40a0ef67866a0d6ea, type: 3}
+  - {fileID: -594914547716764889, guid: cbf9fd5e9730d0f4b8327272ddbfbe29, type: 3}
+  deathFrameRate: 10
+  restartKey: 32
+  restartOnAnyKey: 1
 --- !u!50 &32041331
 Rigidbody2D:
   serializedVersion: 5
@@ -267,12 +285,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7071952169172655210, guid: 463a3983e6ee6734f921f57c4f949843, type: 3}
+  m_Sprite: {fileID: 4380269656606350858, guid: 1dd43527e2665ac4ba2f8c723a14dcca, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.18, y: 0.18}
+  m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

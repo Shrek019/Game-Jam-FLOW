@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 463a3983e6ee6734f921f57c4f949843
+guid: cbf9fd5e9730d0f4b8327272ddbfbe29
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7071952169172655210
-    second: Electro_State01_0
+      213: -594914547716764889
+    second: Electro05_Dead_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -87,12 +87,12 @@ TextureImporter:
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 12
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 1
+    overridden: 0
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Electro_State01_0
+      name: Electro05_Dead_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 18
-        height: 18
+        x: 5
+        y: 5
+        width: 6
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a6cd610770f942260800000000000000
-      internalID: 7071952169172655210
+      spriteID: 72b41afee507eb7f0800000000000000
+      internalID: -594914547716764889
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Electro_State01_0: 7071952169172655210
+      Electro05_Dead_0: -594914547716764889
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
