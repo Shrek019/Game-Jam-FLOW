@@ -11,13 +11,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private KeyCode zapKey = KeyCode.Space;
 
     [Header("Slow Movement Settings")]
-    [SerializeField] private float slowMovementFactor = 0.5f; // snelheid factor als enemy dichtbij
-    [SerializeField] private float slowMoRange = 4.5f;         // bereik waarin de movement vertraagd
+    [SerializeField] private float slowMovementFactor = 0.5f;
+    [SerializeField] private float slowMoRange = 4.5f;
 
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
 
     private Transform _currentTarget;
+    private bool _enemyNearby;
 
     private void Reset()
     {
@@ -26,48 +27,59 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Vind target in zapRange
+        // target zoeken in Update (mag)
         FindTarget();
 
-        // Beweeg player naar rechts met slow factor als enemy dichtbij
-        HandleSlowMovement();
-
-        // Zap input
+        // input check in Update (moet)
         if (_currentTarget != null && Input.GetKeyDown(zapKey))
         {
             ZapToTarget(_currentTarget);
         }
     }
 
+    private void FixedUpdate()
+    {
+        HandleSlowMovement(); // physics movement in FixedUpdate
+    }
+
     private void FindTarget()
     {
         Collider2D hit = Physics2D.OverlapCircle(transform.position, zapRange, enemyLayer);
         _currentTarget = hit != null ? hit.transform : null;
+
+        _enemyNearby = Physics2D.OverlapCircle(transform.position, slowMoRange, enemyLayer) != null;
     }
 
     private void HandleSlowMovement()
     {
-        bool enemyNearby = Physics2D.OverlapCircle(transform.position, slowMoRange, enemyLayer) != null;
-        float currentSpeed = enemyNearby ? moveSpeed * slowMovementFactor : moveSpeed;
+        float currentSpeed = _enemyNearby ? moveSpeed * slowMovementFactor : moveSpeed;
         rb.linearVelocity = new Vector2(currentSpeed, rb.linearVelocity.y);
     }
 
     private void ZapToTarget(Transform target)
     {
-        float oldY = transform.position.y;
+        float oldY = rb.position.y;
 
-        // teleport naar enemy (X overnemen, Y blijft player hoogte)
-        transform.position = new Vector3(target.position.x, oldY, transform.position.z);
+        // STOP velocity eventjes zodat hij niet "terugschiet"
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
-        // probeer EnemyController te pakken en call Die()
-        EnemyController enemy = target.GetComponent<EnemyController>();
-        if (enemy != null)
-        {
-            enemy.Die();
-        }
+        // teleport via rb.position (geen jitter)
+        rb.position = new Vector2(target.position.x, oldY);
 
-        // score +10
+        KillEnemy(target.gameObject);
+
         ScoreManager.Instance.AddScore(10);
+    }
+
+    private void KillEnemy(GameObject obj)
+    {
+        EnemyController enemy = obj.GetComponent<EnemyController>();
+        if (enemy != null) { enemy.Die(); return; }
+
+        WormController worm = obj.GetComponent<WormController>();
+        if (worm != null) { worm.Die(); return; }
+
+        Destroy(obj);
     }
 
     private void OnDrawGizmosSelected()
@@ -78,18 +90,13 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, slowMoRange);
     }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            // 1. enemy dood
-            EnemyController enemy = collision.gameObject.GetComponent<EnemyController>();
-            if (enemy != null)
-            {
-                enemy.Die();
-            }
+            KillEnemy(collision.gameObject);
 
-            // 2. player hartje verliezen
             HealthManager health = FindFirstObjectByType<HealthManager>();
             if (health != null)
             {
@@ -97,6 +104,4 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
-
 }
