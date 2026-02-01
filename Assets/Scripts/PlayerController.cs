@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     private bool _enemyNearby;
 
     private bool isDead = false;
+    public bool IsDead => isDead; // read-only property
+
     private bool isHurt = false;
     private bool canRestart = false;
 
@@ -162,13 +164,24 @@ public class PlayerController : MonoBehaviour
     private void KillEnemy(GameObject obj)
     {
         EnemyController enemy = obj.GetComponent<EnemyController>();
-        if (enemy != null) { enemy.Die(); return; }
+        if (enemy != null)
+        {
+            enemy.Die();
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.enemyDeathSFX);
+            return;
+        }
 
         WormController worm = obj.GetComponent<WormController>();
-        if (worm != null) { worm.Die(); return; }
+        if (worm != null)
+        {
+            worm.Die();
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.enemyDeathSFX);
+            return;
+        }
 
         Destroy(obj);
     }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -195,22 +208,23 @@ public class PlayerController : MonoBehaviour
         currentHealth -= dmg;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        // je HealthManager updaten (als je die hebt)
+        // Update health UI
         HealthManager health = FindFirstObjectByType<HealthManager>();
         if (health != null)
-        {
             health.TakeDamage(dmg);
-        }
 
         if (currentHealth <= 0)
         {
             Die();
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.playerDeathSFX);
         }
         else
         {
             ShowHurtSprite();
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.playerHurtSFX);
         }
     }
+
 
     private void ShowHurtSprite()
     {
