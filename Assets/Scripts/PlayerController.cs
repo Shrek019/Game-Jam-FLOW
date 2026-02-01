@@ -39,6 +39,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private KeyCode restartKey = KeyCode.R;
     [SerializeField] private bool restartOnAnyKey = true;
 
+    [Header("FlowMeter")]
+    [SerializeField] private FlowMeter flowMeter;
+
     private Transform _currentTarget;
     private bool _enemyNearby;
 
@@ -95,7 +98,10 @@ public class PlayerController : MonoBehaviour
         {
             ZapToTarget(_currentTarget);
         }
-
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            CheckFlowMeter();
+        }
         // run animatie updaten
         HandleRunAnimation();
     }
@@ -157,8 +163,6 @@ public class PlayerController : MonoBehaviour
         rb.position = new Vector2(target.position.x, oldY);
 
         KillEnemy(target.gameObject);
-
-        ScoreManager.Instance.AddScore(10);
     }
 
     private void KillEnemy(GameObject obj)
@@ -316,4 +320,46 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, slowMoRange);
     }
+    private void CheckFlowMeter()
+    {
+        if (flowMeter == null) return;
+
+        FlowMeter.FlowResult result = flowMeter.CheckTiming();
+        HealthManager health = FindFirstObjectByType<HealthManager>();
+        int baseScore = 10;
+
+        // Controleer eerst of de bar überhaupt in een zone zit
+        if (!flowMeter.IsBarInAnyZone())
+        {
+            // Buiten alle zones: hart verliezen
+            if (health != null) health.TakeDamage(1);
+
+            ComboManager.Instance.ResetMultiplier();
+            return;
+        }
+
+        // Als we hier zijn, zit de bar in een zone
+        switch (result)
+        {
+            case FlowMeter.FlowResult.Green:
+                ScoreManager.Instance.AddScore(baseScore);
+                ComboManager.Instance.ResetMultiplier();
+                break;
+
+            case FlowMeter.FlowResult.Yellow:
+                int totalScore = baseScore * ComboManager.Instance.CurrentMultiplier;
+                ScoreManager.Instance.AddScore(totalScore);
+                ComboManager.Instance.IncreaseMultiplier();
+                break;
+
+            case FlowMeter.FlowResult.Miss:
+                // theoretisch zou dit hier niet meer gebeuren
+                if (health != null) health.TakeDamage(1);
+                ComboManager.Instance.ResetMultiplier();
+                break;
+        }
+    }
+
+
+
 }
