@@ -41,6 +41,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("FlowMeter")]
     [SerializeField] private FlowMeter flowMeter;
+    [SerializeField] private FlowMeterManager flowMeterManager;
+    private FlowMeter FlowMeter => flowMeterManager.GetActiveFlowMeter();
+
+    [SerializeField] private ComboFeedbackUI comboFeedbackUI;
+
 
     private Transform _currentTarget;
     private bool _enemyNearby;
@@ -349,8 +354,21 @@ public class PlayerController : MonoBehaviour
             case FlowMeter.FlowResult.Yellow:
                 int totalScore = baseScore * ComboManager.Instance.CurrentMultiplier;
                 ScoreManager.Instance.AddScore(totalScore);
+
+                if (comboFeedbackUI != null)
+                    comboFeedbackUI.ShowCombo(ComboManager.Instance.CurrentMultiplier);
+
                 ComboManager.Instance.IncreaseMultiplier();
+
+                // Flowbar sneller laten bewegen
+                FlowMeter.BoostSpeedForSeconds(FlowMeter.YellowSpeedMultiplier, 2f);
+
+                // Kans om layout te switchen
+                flowMeterManager.TryChangeFlowMeter();
                 break;
+
+
+
 
             case FlowMeter.FlowResult.Miss:
                 // theoretisch zou dit hier niet meer gebeuren

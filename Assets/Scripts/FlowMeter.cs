@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class FlowMeter : MonoBehaviour
 {
@@ -13,15 +14,22 @@ public class FlowMeter : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float speed = 600f;
+    public float yellowSpeedMultiplier = 2f;
 
     private float _dir = 1f;
+    private float _currentSpeed;
 
-    public enum FlowResult { Miss, Green, Yellow }
+    public enum FlowResult { Miss, Green, Yellow } // public zodat PlayerController dit kan gebruiken
+    public float YellowSpeedMultiplier => yellowSpeedMultiplier;
+
+    private void Awake()
+    {
+        _currentSpeed = speed;
+    }
 
     private void Update()
     {
         if (movingBar == null || track == null) return;
-
         MoveBar();
     }
 
@@ -34,8 +42,7 @@ public class FlowMeter : MonoBehaviour
         float maxX = halfTrack - halfBar;
 
         Vector2 pos = movingBar.anchoredPosition;
-
-        pos.x += speed * _dir * Time.unscaledDeltaTime; // UI = unscaled beter
+        pos.x += _currentSpeed * _dir * Time.unscaledDeltaTime;
 
         if (pos.x >= maxX)
         {
@@ -51,24 +58,24 @@ public class FlowMeter : MonoBehaviour
         movingBar.anchoredPosition = pos;
     }
 
-
     public FlowResult CheckTiming()
     {
         float barX = movingBar.anchoredPosition.x;
 
-        // Check green zones first
         if (IsInsideZone(barX, greenLeft) || IsInsideZone(barX, greenRight))
             return FlowResult.Green;
 
-        // Then check yellow zone
         if (IsInsideZone(barX, yellow))
             return FlowResult.Yellow;
 
-        // Outside zones = Miss
         return FlowResult.Miss;
     }
 
-
+    public bool IsBarInAnyZone()
+    {
+        float barX = movingBar.anchoredPosition.x;
+        return IsInsideZone(barX, greenLeft) || IsInsideZone(barX, greenRight) || IsInsideZone(barX, yellow);
+    }
 
     private bool IsInsideZone(float x, RectTransform zone)
     {
@@ -80,11 +87,20 @@ public class FlowMeter : MonoBehaviour
 
         return x >= min && x <= max;
     }
-    public bool IsBarInAnyZone()
+
+    // ==========================
+    // TEMPORARY SPEED BOOST
+    // ==========================
+    public void BoostSpeedForSeconds(float multiplier, float duration)
     {
-        float barX = movingBar.anchoredPosition.x;
-        return IsInsideZone(barX, greenLeft) || IsInsideZone(barX, greenRight) || IsInsideZone(barX, yellow);
+        StopAllCoroutines();
+        StartCoroutine(SpeedBoostCoroutine(multiplier, duration));
     }
 
-
+    private IEnumerator SpeedBoostCoroutine(float multiplier, float duration)
+    {
+        _currentSpeed = speed * multiplier;
+        yield return new WaitForSeconds(duration);
+        _currentSpeed = speed;
+    }
 }
